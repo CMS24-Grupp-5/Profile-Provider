@@ -18,7 +18,7 @@ namespace Profile.Controllers
 
             var result = await _profileService.CreateAsync(form);
 
-            return StatusCode(result.StatusCode, result);
+            return StatusCode(result.StatusCode, result.Success);
         }
 
         [HttpGet("{id}")]
