@@ -70,7 +70,7 @@ public class Profile_Tests : IClassFixture<WebApplicationFactory<Program>>
             PhoneNumber = "1234567890",
             UserId = "5"
         };
-
+        
     
 
         var result = await _profileRepository.CreateAsync(entity);
