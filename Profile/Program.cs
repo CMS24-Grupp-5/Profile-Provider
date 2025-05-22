@@ -24,8 +24,19 @@ builder.Services.AddCors(options =>
 
 
 
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
+
+
+if (builder.Environment.IsDevelopment())
+{
+    var inMemoryDb = Guid.NewGuid().ToString();
+    builder.Services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase(inMemoryDb));
+}
+else
+{
+    builder.Services.AddDbContext<DataContext>(x =>
+          x.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
+
+}
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 
@@ -53,3 +64,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+public partial class Program { }

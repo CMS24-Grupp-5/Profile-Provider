@@ -44,7 +44,6 @@ public class ProfileRepository(DataContext dataContext) : IProfileRepository
             };
         }
     }
-
     public async Task<RepositoryResult<UserProfile>> UpdateAsync(UserProfileEntity entity)
     {
         if (entity == null)
@@ -59,7 +58,22 @@ public class ProfileRepository(DataContext dataContext) : IProfileRepository
 
         try
         {
-            _DataContext.Update(entity);
+            var existing = await _DataContext.UserProfiles
+                .FirstOrDefaultAsync(p => p.UserId == entity.UserId);
+
+            if (existing == null)
+            {
+                return new RepositoryResult<UserProfile>
+                {
+                    Succeeded = false,
+                    StatusCode = 404,
+                    Message = "Profile not found."
+                };
+            }
+            existing.FirstName = entity.FirstName;
+            existing.LastName = entity.LastName;
+            existing.PhoneNumber = entity.PhoneNumber;
+
             await _DataContext.SaveChangesAsync();
 
             return new RepositoryResult<UserProfile>
@@ -67,7 +81,7 @@ public class ProfileRepository(DataContext dataContext) : IProfileRepository
                 Succeeded = true,
                 StatusCode = 200,
                 Message = "User profile updated successfully",
-                Result = entity.MapTo<UserProfile>()
+                Result = existing.MapTo<UserProfile>()
             };
         }
         catch (Exception ex)
@@ -80,6 +94,7 @@ public class ProfileRepository(DataContext dataContext) : IProfileRepository
             };
         }
     }
+
 
     public async Task<RepositoryResult<UserProfile>> GetByIdAsync(string id)
     {
