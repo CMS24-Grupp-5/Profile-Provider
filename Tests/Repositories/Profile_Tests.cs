@@ -68,17 +68,17 @@ public class Profile_Tests : IClassFixture<WebApplicationFactory<Program>>
             FirstName = "Yaarub",
             LastName = "Nassr",
             PhoneNumber = "1234567890",
-            UserId = "5"
+            UserId = "6"
         };
         
     
 
         var result = await _profileRepository.CreateAsync(entity);
   
-        var updated = await _profileRepository.GetByIdAsync("5");
+        var updated = await _profileRepository.GetByIdAsync("6");
         Assert.Equal("Yaarub", updated.Result!.FirstName);
         Assert.Equal("Nassr", updated.Result.LastName);
         Assert.Equal("1234567890", updated.Result.PhoneNumber);
-        Assert.Equal("5", updated.Result.UserId);
+        Assert.Equal("6", updated.Result.UserId);
     }
 }

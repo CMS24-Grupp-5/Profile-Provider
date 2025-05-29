@@ -21,29 +21,34 @@ namespace Profile.Controllers
         /// </summary>
         /// <param name="form">Formulärdata för registrering av profil.</param>
         /// <returns>
-        /// <see cref="IActionResult"/> som representerar resultatet av operationen.
-        /// Returnerar HTTP 200 eller annan statuskod beroende på resultatet.
+        /// HTTP 201 Created vid lyckad skapelse eller relevant HTTP-felkod om misslyckad.
         /// </returns>
         [HttpPost("create")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Create(ProfileRegistrationFrom form)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var result = await _profileService.CreateAsync(form);
-
             return StatusCode(result.StatusCode, result.Success);
         }
 
         /// <summary>
         /// Hämtar en användarprofil baserat på angivet ID.
         /// </summary>
-        /// <param name="id">Sträng-ID för den profil som ska hämtas.</param>
+        /// <param name="id">Unikt ID för den profil som ska hämtas.</param>
         /// <returns>
-        /// <see cref="IActionResult"/> med användarprofildata om den finns.
-        /// Returnerar 400 om ID saknas, 404 eller annan statuskod om profil inte hittas.
+        /// HTTP 200 OK med profilinformation vid lyckad hämtning,
+        /// HTTP 400 vid ogiltigt ID,
+        /// HTTP 404 om profil saknas.
         /// </returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -54,7 +59,7 @@ namespace Profile.Controllers
             if (!result.Success)
                 return StatusCode(result.StatusCode, result.Result);
 
-            return Ok(result);
+            return Ok(result.Result);
         }
 
         /// <summary>
@@ -62,10 +67,16 @@ namespace Profile.Controllers
         /// </summary>
         /// <param name="form">Formulärdata för uppdatering av profil.</param>
         /// <returns>
-        /// <see cref="IActionResult"/> med uppdateringsresultat.
-        /// Returnerar lämplig HTTP-statuskod och eventuell felinformation.
+        /// HTTP 200 OK vid lyckad uppdatering,
+        /// HTTP 400 Bad Request vid valideringsfel,
+        /// HTTP 404 Not Found om profil saknas,
+        /// eller annan relevant HTTP-statuskod vid fel.
         /// </returns>
-        [HttpPut("update")]
+        [HttpPost("update")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update(ProfileRegistrationFrom form)
         {
             if (!ModelState.IsValid)
