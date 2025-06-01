@@ -72,7 +72,7 @@ namespace Profile.Controllers
         /// HTTP 404 Not Found om profil saknas,
         /// eller annan relevant HTTP-statuskod vid fel.
         /// </returns>
-        [HttpPost("update")]
+        [HttpPut("update")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
